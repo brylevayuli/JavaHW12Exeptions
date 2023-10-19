@@ -1,3 +1,4 @@
+import org.example.AlreadyExistsException;
 import org.example.NotFoundException;
 import org.example.Product;
 import org.example.ShopRepository;
@@ -10,22 +11,22 @@ public class ShopRepositoryTest {
 
     @Test
     void successfulRemoveById() {
-        ShopRepository shopRepository = new ShopRepository();
+        ShopRepository repo = new ShopRepository();
 
         Product product = new Product(15, "Холодильник", 35_000);
 
-        shopRepository.add(product);
-        shopRepository.remove(15);
+        repo.add(product);
+        repo.remove(15);
 
-        Product[] actual = shopRepository.findAll();
+        Product[] actual = repo.findAll();
         Product[] expected = new Product[]{};
 
         assertArrayEquals(expected, actual);
     }
 
     @Test
-    void successfulRemoveByIdMultProducts() {
-        ShopRepository shopRepository = new ShopRepository();
+    void successfulRemoveByIdMultipleProducts() {
+        ShopRepository repo = new ShopRepository();
 
         Product product1 = new Product(15, "Холодильник", 35_000);
         Product product2 = new Product(20, "Кошки", 50_000);
@@ -33,28 +34,72 @@ public class ShopRepositoryTest {
         Product product4 = new Product(10, "Пельмешки", 500);
 
 
-        shopRepository.add(product1);
-        shopRepository.add(product2);
-        shopRepository.add(product3);
-        shopRepository.add(product4);
+        repo.add(product1);
+        repo.add(product2);
+        repo.add(product3);
+        repo.add(product4);
 
-        shopRepository.remove(30);
+        repo.remove(30);
 
-        Product[] actual = shopRepository.findAll();
+        Product[] actual = repo.findAll();
         Product[] expected = new Product[]{product1, product2, product4};
 
         assertArrayEquals(expected, actual);
     }
 
     @Test
-    void nonExistentId() {
-        ShopRepository shopRepository = new ShopRepository();
+    void removeByNonExistentId() {
+        ShopRepository repo = new ShopRepository();
 
         Product product = new Product(15, "Холодильник", 35_000);
-        shopRepository.add(product);
+        repo.add(product);
 
         Assertions.assertThrows(NotFoundException.class, () -> {
-            shopRepository.remove(404);
+            repo.remove(404);
+        });
+    }
+
+    @Test
+    void successfulAdditionByIdMultipleProducts() {
+        ShopRepository repo = new ShopRepository();
+
+        Product product1 = new Product(15, "Холодильник", 35_000);
+        Product product2 = new Product(20, "Кошки", 50_000);
+        Product product3 = new Product(30, "Мышки", 10_000);
+        Product product4 = new Product(10, "Пельмешки", 500);
+
+
+        repo.add(product1);
+        repo.add(product2);
+        repo.add(product3);
+        repo.add(product4);
+
+
+        Product[] actual = repo.findAll();
+        Product[] expected = new Product[]{product1, product2, product3, product4};
+
+        assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    void additionByExistentId() {
+        ShopRepository repo = new ShopRepository();
+
+        Product product1 = new Product(15, "Холодильник", 35_000);
+        Product product2 = new Product(20, "Кошки", 50_000);
+        Product product3 = new Product(30, "Мышки", 10_000);
+        Product product4 = new Product(10, "Пельмешки", 500);
+
+
+        repo.add(product1);
+        repo.add(product2);
+        repo.add(product3);
+        repo.add(product4);
+
+        Assertions.assertThrows(AlreadyExistsException.class, () -> {
+            repo.add(product2);
         });
     }
 }
+
+

@@ -19,14 +19,6 @@ public class ShopRepository {
         return tmp;
     }
 
-    /**
-     * Метод добавления товара в репозиторий
-     * @param product — добавляемый товар
-     */
-    public void add(Product product) {
-        products = addToArray(products, product);
-    }
-
     public Product findById(int id) {
         for (Product product : products) {
             if (product.getId() == id) {
@@ -34,6 +26,23 @@ public class ShopRepository {
             }
         }
         return null;
+    }
+
+    /**
+     * Метод добавления товара в репозиторий
+     * @param product — добавляемый товар
+     */
+
+    public void add(Product product) {
+        // Проверяем наличие товара с тем же ID
+        for (Product existingProduct : products) {
+            if (existingProduct.getId() == product.getId()) {
+                throw new AlreadyExistsException(
+                        "Element with id " + product.getId() + " already exists"
+                );
+            }
+        }
+        products = addToArray(products, product);
     }
 
     public Product[] findAll() {
